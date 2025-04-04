@@ -25,7 +25,7 @@ public class Main {
         if (appointments.add(apt1)) System.out.println("Added :" + apt1);
         else System.out.println("Failed to add: " + apt1);
 
-
+        // Try to schedule at same time
         var apt2 = new Appointment(
                 d,
                 p2,
@@ -33,10 +33,29 @@ public class Main {
                 now.plusMinutes(90),
                 AppointmentState.Scheduled);
 
-        if (appointments.add(apt1)) System.out.println("Added :" + apt2);
+        if (appointments.add(apt2)) System.out.println("Added :" + apt2);
         else System.out.println("Failed to add: " + apt2);
 
 
+        // Cancel first appointment
+        if (appointments.updateState(apt1, AppointmentState.Canceled))
+            System.out.println("Canceled: " + apt1);
+        else System.out.println("Failed to Cancel: " + apt1);
+
+
+
+        // Retry appointment 2 (success)
+        if (appointments.add(apt2)) System.out.println("Added :" + apt2);
+        else System.out.println("Failed to add: " + apt2);
+
+
+        // Try to un cancel appointment 1 (conflicts with apt2)(failure)
+        if (appointments.updateState(apt1, AppointmentState.Scheduled))
+            System.out.println("Scheduled: " + apt1);
+        else System.out.println("Failed to Schedule: " + apt1);
+
+
+        System.out.println();
         System.out.println("Scheduled Appointments");
         for(var a : appointments.getAppointments())
         {

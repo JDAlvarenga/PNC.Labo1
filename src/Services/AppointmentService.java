@@ -58,6 +58,17 @@ public class AppointmentService {
         var idx = appointments.indexOf(apt);
         if (idx == -1) return false;
 
+        if (appointments.get(idx).getState() == newState) return true;
+
+        // it's possible for a new appointment to be scheduled at this time as this was canceled
+        if (appointments.get(idx).getState() == AppointmentState.Canceled)
+        {
+            // There are conflicting appointments
+            if (appointmentsAt(apt.getDateTime()).anyMatch(app ->
+                    app.getDoctor().equals(apt.getDoctor()) ||
+                    app.getPatient().equals(apt.getPatient())
+            )) return false;
+        }
         appointments.get(idx).setState(newState);
         return true;
     }
@@ -65,9 +76,15 @@ public class AppointmentService {
     // Stream of appointments that overlap with 'time' and an hour after
     public Stream<Appointment> appointmentsAt(LocalDateTime startTime)
     {
+        return appointmentsAt(startTime, true);
+    }
+    public Stream<Appointment> appointmentsAt(LocalDateTime startTime, boolean excludeCanceled)
+    {
         var endTime = startTime.plusHours(1);
 
         return appointments.stream().filter(apt -> {
+            if (excludeCanceled && apt.getState() == AppointmentState.Canceled) return false;
+
             var aStart = apt.getDateTime();
             var aEnd = aStart.plusHours(1);
 
@@ -79,7 +96,6 @@ public class AppointmentService {
         });
     }
 
-    //TODO: Exclude canceled appointments from conflicts
     //TODO: Validate trying to un-cancel an appointment
 
 }
