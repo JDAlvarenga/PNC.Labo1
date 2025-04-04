@@ -1,25 +1,65 @@
 import Models.*;
 import Services.AppointmentsService;
+import Services.DoctorsService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
+        var d1 = new Doctor("Dr.", "Mundo", LocalDate.now().minusYears(40), "1865156-5", EpicCode.NewCode(), LocalDate.now(), "Saw");
+
+        var d2 = d1.clone();
+        d2.setFirstName("Not");
+
+
+
+        var doctors = new DoctorsService();
+
+        if (doctors.add(d1)) System.out.println("Added: "+ d1);
+        else System.out.println("Failed to add: " + d1);
+
+        // fails to add doctor with same code
+        if (doctors.add(d2)) System.out.println("Added: "+ d2);
+        else System.out.println("Failed to add: " + d2);
+
+        // update doctor with new firstname
+        if (doctors.update(d2)) System.out.println("Updated: "+ d2);
+        else System.out.println("Failed to update: " + d2);
+
+        // modifying the d2 object does not change the doctors in the service
+        d2.setFirstName("Real");
+
+        System.out.println();
+        System.out.println("Registered doctors");
+        for(var doc: doctors.getDoctors())
+            System.out.println(doc);
+
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
+
+
+
+
+
+
+
         Patient p1 = new Patient("Patient", "Zero", LocalDate.now().minusYears(26), "68431571-3");
 
         Patient p2 = new Patient("Patient", "-One", LocalDate.now().minusYears(16), "68431575-7");
 
-        var d = new Doctor("Dr.", "Mundo", LocalDate.now().minusYears(40), "1865156-5", EpicCode.NewCode(), LocalDate.now(), "Saw");
 
         var appointments = new AppointmentsService();
 
         var now = LocalDateTime.now();
 
         var apt1 = new Appointment(
-                d,
+                d1,
                 p1,
-                d.getSpecialty(),
+                d1.getSpecialty(),
                 now.plusMinutes(60));
 
         if (appointments.add(apt1)) System.out.println("Added :" + apt1);
@@ -27,9 +67,9 @@ public class Main {
 
         // Try to schedule at same time
         var apt2 = new Appointment(
-                d,
+                d1,
                 p2,
-                d.getSpecialty(),
+                d1.getSpecialty(),
                 now.plusMinutes(90),
                 AppointmentState.Scheduled);
 
@@ -61,6 +101,10 @@ public class Main {
         {
             System.out.println(a);
         }
+
+
+
+
 
 
     }

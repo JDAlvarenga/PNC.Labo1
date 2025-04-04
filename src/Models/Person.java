@@ -3,7 +3,7 @@ package Models;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public abstract class Person {
+public abstract class Person implements Cloneable{
     protected String firstName;
     protected String lastName;
     protected String dui;
@@ -81,5 +81,19 @@ public abstract class Person {
                 ", dui='" + dui + '\'' +
                 ", birthDate=" + birthDate +
                 '}';
+    }
+
+    @Override
+    public Person clone() {
+        try {
+            Person clone = (Person) super.clone();
+            clone.firstName = firstName;
+            clone.lastName = lastName;
+            clone.dui = dui;
+            clone.birthDate = birthDate;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

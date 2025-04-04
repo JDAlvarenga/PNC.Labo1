@@ -2,7 +2,7 @@ package Models;
 
 import java.time.LocalDate;
 
-public class Doctor extends Person{
+public class Doctor extends Person implements Cloneable{
 
     protected EpicCode code;
     protected LocalDate hireDate;
@@ -36,16 +36,14 @@ public class Doctor extends Person{
     @Override
     public final boolean equals(Object o) {
         if (!(o instanceof Doctor doctor)) return false;
-        if (!super.equals(o)) return false;
+//        if (!super.equals(o)) return false;
 
         return getCode().equals(doctor.getCode());
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + getCode().hashCode();
-        return result;
+        return code.hashCode();
     }
 
     @Override
@@ -54,6 +52,19 @@ public class Doctor extends Person{
                 "code=" + code +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", specialty='" + specialty + '\'' +
+                ", hireDate=" + hireDate +
+                ", dui='" + dui + '\'' +
+                ", birthDate=" + birthDate +
                 '}';
+    }
+
+    @Override
+    public Doctor clone() {
+        Doctor clone = (Doctor) super.clone();
+        clone.code = code.clone();
+        clone.hireDate = hireDate;
+        clone.specialty = specialty;
+        return clone;
     }
 }
