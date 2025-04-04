@@ -5,7 +5,6 @@ import java.util.Random;
 public class EpicCode implements Cloneable
 {
     private String code;
-    private EpicCode() {}
     public EpicCode(String code)
     {
         this.code = code;

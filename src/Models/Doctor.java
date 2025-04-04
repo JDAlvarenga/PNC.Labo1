@@ -47,4 +47,13 @@ public class Doctor extends Person{
         result = 31 * result + getCode().hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Doctor{" +
+                "code=" + code +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
+    }
 }

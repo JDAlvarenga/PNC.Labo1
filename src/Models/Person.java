@@ -9,7 +9,6 @@ public abstract class Person {
     protected String dui;
     protected LocalDate birthDate;
 
-    public Person() {}
 
     public Person(String firstName, String lastName,LocalDate birthDate, String dui) {
         setFirstName(firstName);
@@ -72,5 +71,15 @@ public abstract class Person {
         result = 31 * result + Objects.hashCode(getDui());
         result = 31 * result + Objects.hashCode(getBirthDate());
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", dui='" + dui + '\'' +
+                ", birthDate=" + birthDate +
+                '}';
     }
 }

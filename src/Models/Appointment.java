@@ -1,8 +1,9 @@
 package Models;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-public class Appointment {
+public class Appointment implements Cloneable{
     private Doctor doctor;
     private Patient patient;
     private String specialty;
@@ -65,5 +66,45 @@ public class Appointment {
     }
 
 
+    @Override
+    public Appointment clone() {
+        try {
+            Appointment clone = (Appointment) super.clone();
+            clone.doctor = doctor;
+            clone.patient = patient;
+            clone.specialty = specialty;
+            clone.dateTime = dateTime;
+            clone.state = state;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof Appointment that)) return false;
+
+        return Objects.equals(getDoctor(), that.getDoctor()) && Objects.equals(getPatient(), that.getPatient()) && Objects.equals(getDateTime(), that.getDateTime());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(getDoctor());
+        result = 31 * result + Objects.hashCode(getPatient());
+        result = 31 * result + Objects.hashCode(getDateTime());
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Appointment{" +
+                "doctor=" + doctor.getFirstName() + " " + doctor.getLastName() +
+                ", patient=" + patient.getFirstName() + " " + patient.getLastName() +
+                ", specialty='" + specialty + '\'' +
+                ", dateTime=" + dateTime +
+                ", state=" + state +
+                '}';
+    }
 }
 
