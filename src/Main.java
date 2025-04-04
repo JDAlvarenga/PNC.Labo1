@@ -1,5 +1,5 @@
 import Models.*;
-import Services.AppointmentService;
+import Services.AppointmentsService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ public class Main {
 
         var d = new Doctor("Dr.", "Mundo", LocalDate.now().minusYears(40), "1865156-5", EpicCode.NewCode(), LocalDate.now(), "Saw");
 
-        var appointments = new AppointmentService();
+        var appointments = new AppointmentsService();
 
         var now = LocalDateTime.now();
 

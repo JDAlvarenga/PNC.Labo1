@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class AppointmentService {
+public class AppointmentsService {
     private final List<Appointment> appointments = new ArrayList<>();
 
-    public AppointmentService() {
+    public AppointmentsService() {
     }
 
     public List<Appointment> getAppointments() {
@@ -95,7 +95,5 @@ public class AppointmentService {
             return true;
         });
     }
-
-    //TODO: Validate trying to un-cancel an appointment
 
 }
