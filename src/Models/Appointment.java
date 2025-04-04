@@ -70,8 +70,8 @@ public class Appointment implements Cloneable{
     public Appointment clone() {
         try {
             Appointment clone = (Appointment) super.clone();
-            clone.doctor = doctor;
-            clone.patient = patient;
+            clone.doctor = doctor.clone();
+            clone.patient = patient.clone();
             clone.specialty = specialty;
             clone.dateTime = dateTime;
             clone.state = state;

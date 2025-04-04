@@ -12,7 +12,7 @@ public class DoctorsService {
 
     public List<Doctor> getDoctors()
     {
-        return doctors.stream().toList();
+        return doctors.stream().map(Doctor::clone).toList();
     }
 
     public boolean add(Doctor doctor)

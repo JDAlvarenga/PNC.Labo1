@@ -14,7 +14,7 @@ public class AppointmentsService {
     }
 
     public List<Appointment> getAppointments() {
-        return appointments.stream().toList();
+        return appointments.stream().map(Appointment::clone).toList();
     }
 
     public List<Appointment> getDoctorAppointments(Doctor doctor)
@@ -73,12 +73,17 @@ public class AppointmentsService {
         return true;
     }
 
+    // public versions that return clones to avoid modifying internal state
+    public Stream<Appointment> getAppointmentsAt(LocalDateTime startTime) {return appointmentsAt(startTime).map(Appointment::clone);}
+    public Stream<Appointment> getAppointmentsAt(LocalDateTime startTime, boolean excludeCanceled) {return appointmentsAt(startTime, excludeCanceled).map(Appointment::clone);}
+
+
     // Stream of appointments that overlap with 'time' and an hour after
-    public Stream<Appointment> appointmentsAt(LocalDateTime startTime)
+    protected Stream<Appointment> appointmentsAt(LocalDateTime startTime)
     {
         return appointmentsAt(startTime, true);
     }
-    public Stream<Appointment> appointmentsAt(LocalDateTime startTime, boolean excludeCanceled)
+    protected Stream<Appointment> appointmentsAt(LocalDateTime startTime, boolean excludeCanceled)
     {
         var endTime = startTime.plusHours(1);
 
