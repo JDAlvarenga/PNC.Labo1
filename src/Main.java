@@ -1,6 +1,7 @@
 import Models.*;
 import Services.AppointmentsService;
 import Services.DoctorsService;
+import Services.PatientsService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,15 +42,31 @@ public class Main {
         System.out.println();
 
 
-
-
-
-
-
-
         Patient p1 = new Patient("Patient", "Zero", LocalDate.now().minusYears(26), "68431571-3");
 
         Patient p2 = new Patient("Patient", "-One", LocalDate.now().minusYears(16), "68431575-7");
+
+        var patients = new PatientsService();
+
+        if (patients.add(p1)) System.out.println("Added: "+ p1);
+        else System.out.println("Failed to add: " + p1);
+
+
+        if (patients.add(p2)) System.out.println("Added: "+ p2);
+        else System.out.println("Failed to add: " + p2);
+
+
+        // modifying the p2 object does not change the patients in the service
+        p2.setFirstName("Impatient");
+
+        System.out.println();
+        System.out.println("Registered patients");
+        for(var patient: patients.getPatients())
+            System.out.println(patient);
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
 
 
         var appointments = new AppointmentsService();
