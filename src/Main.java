@@ -40,22 +40,41 @@ public class Main {
                     // Agregar nuevo doctor
                     System.out.print("Nombre: ");
                     String nombreD = scanner.nextLine();
+
                     System.out.print("Apellido: ");
                     String apellidoD = scanner.nextLine();
+
                     System.out.print("DUI: ");
                     String duiD = scanner.nextLine();
+
                     System.out.print("Fecha de nacimiento (YYYY-MM-DD): ");
                     LocalDate nacimientoD = LocalDate.parse(scanner.nextLine());
+
                     System.out.print("Fecha de reclutamiento (YYYY-MM-DD): ");
                     LocalDate reclutado = LocalDate.parse(scanner.nextLine());
+
                     System.out.print("Especialidad: ");
                     String especialidad = scanner.nextLine();
-                    Doctor doctor = new Doctor(nombreD, apellidoD, nacimientoD, duiD, EpicCode.NewCode(), reclutado, especialidad);
-                    if (doctorsService.add(doctor))
-                        System.out.println("Doctor agregado exitosamente.");
-                    else
-                        System.out.println("No se pudo agregar al doctor (posiblemente código duplicado).");
+
+                    Doctor doctor = new Doctor(
+                            EpicCode.NewCode(),
+                            nombreD,
+                            apellidoD,
+                            duiD,
+                            nacimientoD,
+                            reclutado,
+                            especialidad
+                    );
+
+                    if (doctorsService.add(doctor)) {
+                        System.out.println(" Doctor agregado exitosamente.");
+                        System.out.println(" Código épico: " + doctor.getCode());
+                        System.out.println(" ID único: " + doctor.getId());
+                    } else {
+                        System.out.println(" No se pudo agregar al doctor :c ");
+                    }
                     break;
+
 
                 case 2:
                     // Agregar nuevo paciente
