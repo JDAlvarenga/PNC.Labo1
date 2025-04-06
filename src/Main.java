@@ -68,7 +68,7 @@ public class Main {
                     if (doctorsService.add(doctor)) {
                         System.out.println(" Doctor agregado exitosamente.");
                         System.out.println(" Código épico: " + doctor.getCode());
-                        System.out.println(" ID único: " + doctor.getId());
+                        //System.out.println(" ID único: " + doctor.getId());
                     } else {
                         System.out.println(" No se pudo agregar al doctor :c ");
                     }
