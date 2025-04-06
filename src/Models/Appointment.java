@@ -5,17 +5,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Appointment implements Cloneable {
-    private final UUID id = UUID.randomUUID(); // ID único
+    private final UUID id = UUID.randomUUID(); // ID único automaticamente
     private Doctor doctor;
     private Patient patient;
     private String specialty;
     private LocalDateTime dateTime;
     private AppointmentState state;
-
-    // ✅ Getter del ID
-    public UUID getId() {
-        return id;
-    }
 
     public Appointment(Doctor doctor, Patient patient, String specialty, LocalDateTime dateTime) {
         this(doctor, patient, specialty, dateTime, AppointmentState.Scheduled);
@@ -27,6 +22,10 @@ public class Appointment implements Cloneable {
         this.specialty = specialty;
         this.dateTime = dateTime;
         this.state = state;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public Doctor getDoctor() {
@@ -105,13 +104,26 @@ public class Appointment implements Cloneable {
 
     @Override
     public String toString() {
-        return "Appointment{" +
-                "id=" + id +
-                ", doctor=" + doctor.getFirstName() + " " + doctor.getLastName() +
-                ", patient=" + patient.getFirstName() + " " + patient.getLastName() +
-                ", specialty='" + specialty + '\'' +
-                ", dateTime=" + dateTime +
-                ", state=" + state +
-                '}';
+        return """
+            ****************************************************************
+             Cita ID: %s
+             Doctor: %s %s (%s)
+             Código épico: %s
+             Paciente: %s %s
+             Especialidad: %s
+             Fecha y hora: %s
+             Estado: %s
+            """.formatted(
+                id,
+                doctor.getFirstName(),
+                doctor.getLastName(),
+                doctor.getSpecialty(),
+                doctor.getCode(),
+                patient.getFirstName(),
+                patient.getLastName(),
+                specialty,
+                dateTime,
+                state
+        );
     }
 }
