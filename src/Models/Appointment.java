@@ -2,18 +2,25 @@ package Models;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
-public class Appointment implements Cloneable{
+public class Appointment implements Cloneable {
+    private final UUID id = UUID.randomUUID(); // ID único
     private Doctor doctor;
     private Patient patient;
     private String specialty;
     private LocalDateTime dateTime;
     private AppointmentState state;
 
+    // ✅ Getter del ID
+    public UUID getId() {
+        return id;
+    }
 
-    public Appointment(Doctor doctor, Patient patient, String specialty, LocalDateTime dateTime ) {
+    public Appointment(Doctor doctor, Patient patient, String specialty, LocalDateTime dateTime) {
         this(doctor, patient, specialty, dateTime, AppointmentState.Scheduled);
     }
+
     public Appointment(Doctor doctor, Patient patient, String specialty, LocalDateTime dateTime, AppointmentState state) {
         this.doctor = doctor;
         this.patient = patient;
@@ -65,7 +72,6 @@ public class Appointment implements Cloneable{
         this.state = state;
     }
 
-
     @Override
     public Appointment clone() {
         try {
@@ -84,8 +90,9 @@ public class Appointment implements Cloneable{
     @Override
     public final boolean equals(Object o) {
         if (!(o instanceof Appointment that)) return false;
-
-        return Objects.equals(getDoctor(), that.getDoctor()) && Objects.equals(getPatient(), that.getPatient()) && Objects.equals(getDateTime(), that.getDateTime());
+        return Objects.equals(getDoctor(), that.getDoctor()) &&
+                Objects.equals(getPatient(), that.getPatient()) &&
+                Objects.equals(getDateTime(), that.getDateTime());
     }
 
     @Override
@@ -99,7 +106,8 @@ public class Appointment implements Cloneable{
     @Override
     public String toString() {
         return "Appointment{" +
-                "doctor=" + doctor.getFirstName() + " " + doctor.getLastName() +
+                "id=" + id +
+                ", doctor=" + doctor.getFirstName() + " " + doctor.getLastName() +
                 ", patient=" + patient.getFirstName() + " " + patient.getLastName() +
                 ", specialty='" + specialty + '\'' +
                 ", dateTime=" + dateTime +
@@ -107,4 +115,3 @@ public class Appointment implements Cloneable{
                 '}';
     }
 }
-
