@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -47,11 +48,9 @@ public class Main {
                     System.out.print("DUI: ");
                     String duiD = scanner.nextLine();
 
-                    System.out.print("Fecha de nacimiento (YYYY-MM-DD): ");
-                    LocalDate nacimientoD = LocalDate.parse(scanner.nextLine());
+                    LocalDate nacimientoD = promptDate(scanner, "Fecha de nacimiento (YYYY-MM-DD): ");
 
-                    System.out.print("Fecha de reclutamiento (YYYY-MM-DD): ");
-                    LocalDate reclutado = LocalDate.parse(scanner.nextLine());
+                    LocalDate reclutado = promptDate(scanner, "Fecha de reclutamiento (YYYY-MM-DD): ");
 
                     System.out.print("Especialidad: ");
                     String especialidad = scanner.nextLine();
@@ -84,8 +83,8 @@ public class Main {
                     String apellidoP = scanner.nextLine();
                     System.out.print("DUI (00000000-0 si es menor): ");
                     String duiP = scanner.nextLine();
-                    System.out.print("Fecha de nacimiento (YYYY-MM-DD): ");
-                    LocalDate nacimientoP = LocalDate.parse(scanner.nextLine());
+
+                    LocalDate nacimientoP = promptDate(scanner, "Fecha de nacimiento (YYYY-MM-DD): ");
                     Patient paciente = new Patient(nombreP, apellidoP, nacimientoP, duiP);
                     if (patientsService.add(paciente))
                         System.out.println("Paciente agregado exitosamente.");
@@ -114,12 +113,10 @@ public class Main {
 
                     LocalDateTime fechaHora;
                     if (esHoy) {
-                        System.out.print("Hora exacta (HH:mm): ");
-                        LocalTime hora = LocalTime.parse(scanner.nextLine());
+                        LocalTime hora = promptTime(scanner, "Hora exacta (HH:mm): ");
                         fechaHora = LocalDateTime.of(LocalDate.now(), hora);
                     } else {
-                        System.out.print("Fecha (YYYY-MM-DD): ");
-                        LocalDate fecha = LocalDate.parse(scanner.nextLine());
+                        LocalDate fecha = promptDate(scanner, "Fecha (YYYY-MM-DD): ");
                         // Asignación automática de hora entre 8:00 y 16:00 sin conflictos
                         fechaHora = appointmentsService.asignarHoraDisponible(doctorCita, pacienteCita, fecha);
                         if (fechaHora == null) {
@@ -143,8 +140,8 @@ public class Main {
 
                 case 5:
                     // Ver citas por fecha
-                    System.out.print("Ingrese fecha (YYYY-MM-DD): ");
-                    LocalDate fechaFiltro = LocalDate.parse(scanner.nextLine());
+                    LocalDate fechaFiltro = promptDate(scanner, "Ingrese fecha (YYYY-MM-DD): ");
+
                     appointmentsService.getAppointmentsByDate(fechaFiltro).forEach(System.out::println);
                     break;
 
@@ -180,5 +177,32 @@ public class Main {
             }
         }
         scanner.close();
+    }
+
+    private static LocalDate promptDate (Scanner scanner, String msg){
+        LocalDate date = null;
+
+        while (date == null) {
+            try {
+                System.out.print(msg);
+                date = LocalDate.parse(scanner.nextLine());
+            } catch (DateTimeParseException e) {
+                System.out.println("Formato de fecha incorrecto. Intente de nuevo");
+            }
+        }
+        return date;
+    }
+    private static LocalTime promptTime (Scanner scanner, String msg){
+        LocalTime time = null;
+
+        while (time == null) {
+            try {
+                System.out.print(msg);
+                time = LocalTime.parse(scanner.nextLine());
+            } catch (DateTimeParseException e) {
+                System.out.println("Formato de hora incorrecto. Intente de nuevo");
+            }
+        }
+        return time;
     }
 }
