@@ -24,6 +24,9 @@ public class AppointmentsService {
     }
 
     public boolean add(Appointment apt) {
+        var hour = apt.getDateTime().getHour();
+        if (hour < 8 || hour > 16) return false;
+
         if (appointmentsAt(apt.getDateTime()).anyMatch(app ->
                 app.getDoctor().equals(apt.getDoctor()) ||
                         app.getPatient().equals(apt.getPatient())

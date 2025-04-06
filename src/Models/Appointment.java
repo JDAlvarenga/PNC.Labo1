@@ -56,11 +56,8 @@ public class Appointment implements Cloneable {
         return dateTime;
     }
 
-    public boolean setDateTime(LocalDateTime dateTime) {
-        var hour = dateTime.getHour();
-        if (hour < 8 || hour > 16) return false;
+    public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
-        return true;
     }
 
     public AppointmentState getState() {
