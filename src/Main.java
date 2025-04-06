@@ -5,124 +5,161 @@ import Services.PatientsService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
+import java.util.UUID;
 
 public class Main {
     public static void main(String[] args) {
-        var d1 = new Doctor("Dr.", "Mundo", LocalDate.now().minusYears(40), "1865156-5", EpicCode.NewCode(), LocalDate.now(), "Saw");
+        Scanner scanner = new Scanner(System.in);
+        DoctorsService doctorsService = new DoctorsService();
+        PatientsService patientsService = new PatientsService();
+        AppointmentsService appointmentsService = new AppointmentsService();
 
-        var d2 = d1.clone();
-        d2.setFirstName("Not");
+        boolean running = true;
 
+        while (running) {
+            System.out.println("\n--- BIENVENIDO AL SISTEMA DEL DOCTOR MUNDO ---");
+            System.out.println("1. Agregar nuevo doctor");
+            System.out.println("2. Agregar nuevo paciente");
+            System.out.println("3. Agendar nueva cita");
+            System.out.println("4. Ver todas las citas");
+            System.out.println("5. Ver citas por fecha");
+            System.out.println("6. Ver citas por código de doctor");
+            System.out.println("7. Cancelar cita");
+            System.out.println("8. Mundo salva vidas");
+            System.out.println("9. Salir");
+            System.out.print("Seleccione una opción: ");
 
+            int opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar buffer
 
-        var doctors = new DoctorsService();
+            switch (opcion) {
+                case 1:
+                    // Agregar nuevo doctor
+                    System.out.print("Nombre: ");
+                    String nombreD = scanner.nextLine();
+                    System.out.print("Apellido: ");
+                    String apellidoD = scanner.nextLine();
+                    System.out.print("DUI: ");
+                    String duiD = scanner.nextLine();
+                    System.out.print("Fecha de nacimiento (YYYY-MM-DD): ");
+                    LocalDate nacimientoD = LocalDate.parse(scanner.nextLine());
+                    System.out.print("Fecha de reclutamiento (YYYY-MM-DD): ");
+                    LocalDate reclutado = LocalDate.parse(scanner.nextLine());
+                    System.out.print("Especialidad: ");
+                    String especialidad = scanner.nextLine();
+                    Doctor doctor = new Doctor(nombreD, apellidoD, nacimientoD, duiD, EpicCode.NewCode(), reclutado, especialidad);
+                    if (doctorsService.add(doctor))
+                        System.out.println("Doctor agregado exitosamente.");
+                    else
+                        System.out.println("No se pudo agregar al doctor (posiblemente código duplicado).");
+                    break;
 
-        if (doctors.add(d1)) System.out.println("Added: "+ d1);
-        else System.out.println("Failed to add: " + d1);
+                case 2:
+                    // Agregar nuevo paciente
+                    System.out.print("Nombre: ");
+                    String nombreP = scanner.nextLine();
+                    System.out.print("Apellido: ");
+                    String apellidoP = scanner.nextLine();
+                    System.out.print("DUI (00000000-0 si es menor): ");
+                    String duiP = scanner.nextLine();
+                    System.out.print("Fecha de nacimiento (YYYY-MM-DD): ");
+                    LocalDate nacimientoP = LocalDate.parse(scanner.nextLine());
+                    Patient paciente = new Patient(nombreP, apellidoP, nacimientoP, duiP);
+                    if (patientsService.add(paciente))
+                        System.out.println("Paciente agregado exitosamente.");
+                    else
+                        System.out.println("No se pudo agregar al paciente.");
+                    break;
 
-        // fails to add doctor with same code
-        if (doctors.add(d2)) System.out.println("Added: "+ d2);
-        else System.out.println("Failed to add: " + d2);
+                case 3:
+                    // Agendar cita
+                    System.out.print("DUI del paciente: ");
+                    String duiPaciente = scanner.nextLine();
+                    Patient pacienteCita = patientsService.findByDui(duiPaciente);
+                    if (pacienteCita == null) {
+                        System.out.println("Paciente no encontrado.");
+                        break;
+                    }
+                    System.out.print("Código del doctor: ");
+                    String codigoDoctor = scanner.nextLine();
+                    Doctor doctorCita = doctorsService.findByCode(codigoDoctor);
+                    if (doctorCita == null) {
+                        System.out.println("Doctor no encontrado.");
+                        break;
+                    }
+                    System.out.print("¿La cita es para hoy? (s/n): ");
+                    boolean esHoy = scanner.nextLine().equalsIgnoreCase("s");
 
-        // update doctor with new firstname
-        if (doctors.update(d2)) System.out.println("Updated: "+ d2);
-        else System.out.println("Failed to update: " + d2);
+                    LocalDateTime fechaHora;
+                    if (esHoy) {
+                        System.out.print("Hora exacta (HH:mm): ");
+                        LocalTime hora = LocalTime.parse(scanner.nextLine());
+                        fechaHora = LocalDateTime.of(LocalDate.now(), hora);
+                    } else {
+                        System.out.print("Fecha (YYYY-MM-DD): ");
+                        LocalDate fecha = LocalDate.parse(scanner.nextLine());
+                        // Asignación automática de hora entre 8:00 y 16:00 sin conflictos
+                        fechaHora = appointmentsService.asignarHoraDisponible(doctorCita, pacienteCita, fecha);
+                        if (fechaHora == null) {
+                            System.out.println("No hay horas disponibles para esa fecha.");
+                            break;
+                        }
+                    }
+                    Appointment nuevaCita = new Appointment(doctorCita, pacienteCita, doctorCita.getSpecialty(), fechaHora);
+                    if (appointmentsService.add(nuevaCita))
+                        System.out.println("Cita agendada correctamente.");
+                    else
+                        System.out.println("No se pudo agendar la cita. Verifique conflictos de horario.");
+                    break;
 
-        // modifying the d2 object does not change the doctors in the service
-        d2.setFirstName("Real");
+                case 4:
+                    // Mostrar todas las citas
+                    for (Appointment a : appointmentsService.getAppointments()) {
+                        System.out.println(a);
+                    }
+                    break;
 
-        System.out.println();
-        System.out.println("Registered doctors");
-        for(var doc: doctors.getDoctors())
-            System.out.println(doc);
+                case 5:
+                    // Ver citas por fecha
+                    System.out.print("Ingrese fecha (YYYY-MM-DD): ");
+                    LocalDate fechaFiltro = LocalDate.parse(scanner.nextLine());
+                    appointmentsService.getAppointmentsByDate(fechaFiltro).forEach(System.out::println);
+                    break;
 
+                case 6:
+                    // Buscar citas por código de doctor
+                    System.out.print("Código del doctor: ");
+                    String code = scanner.nextLine();
+                    appointmentsService.getAppointmentsByDoctor(code).forEach(System.out::println);
+                    break;
 
-        System.out.println();
-        System.out.println();
-        System.out.println();
+                case 7:
+                    // Cancelar cita por ID
+                    System.out.print("Ingrese ID de la cita a cancelar: ");
+                    String idCita = scanner.nextLine();
+                    if (appointmentsService.cancelarCita(UUID.fromString(idCita)))
+                        System.out.println("Cita cancelada exitosamente.");
+                    else
+                        System.out.println("No se encontró la cita con ese ID.");
+                    break;
 
+                case 8:
+                    // Boton de "Mundo salva vidas"
+                    System.out.println("\n ¡Mundo salva vidas! EL MEJOR \n");
+                    break;
 
-        Patient p1 = new Patient("Patient", "Zero", LocalDate.now().minusYears(26), "68431571-3");
+                case 9:
+                    running = false;
+                    System.out.println("Saliendo del sistema...");
+                    break;
 
-        Patient p2 = new Patient("Patient", "-One", LocalDate.now().minusYears(16), "68431575-7");
-
-        var patients = new PatientsService();
-
-        if (patients.add(p1)) System.out.println("Added: "+ p1);
-        else System.out.println("Failed to add: " + p1);
-
-
-        if (patients.add(p2)) System.out.println("Added: "+ p2);
-        else System.out.println("Failed to add: " + p2);
-
-
-        // modifying the p2 object does not change the patients in the service
-        p2.setFirstName("Impatient");
-
-        System.out.println();
-        System.out.println("Registered patients");
-        for(var patient: patients.getPatients())
-            System.out.println(patient);
-
-        System.out.println();
-        System.out.println();
-        System.out.println();
-
-
-        var appointments = new AppointmentsService();
-
-        var now = LocalDateTime.now();
-
-        var apt1 = new Appointment(
-                d1,
-                p1,
-                d1.getSpecialty(),
-                now.plusMinutes(60));
-
-        if (appointments.add(apt1)) System.out.println("Added :" + apt1);
-        else System.out.println("Failed to add: " + apt1);
-
-        // Try to schedule at same time
-        var apt2 = new Appointment(
-                d1,
-                p2,
-                d1.getSpecialty(),
-                now.plusMinutes(90),
-                AppointmentState.Scheduled);
-
-        if (appointments.add(apt2)) System.out.println("Added :" + apt2);
-        else System.out.println("Failed to add: " + apt2);
-
-
-        // Cancel first appointment
-        if (appointments.updateState(apt1, AppointmentState.Canceled))
-            System.out.println("Canceled: " + apt1);
-        else System.out.println("Failed to Cancel: " + apt1);
-
-
-
-        // Retry appointment 2 (success)
-        if (appointments.add(apt2)) System.out.println("Added :" + apt2);
-        else System.out.println("Failed to add: " + apt2);
-
-
-        // Try to un cancel appointment 1 (conflicts with apt2)(failure)
-        if (appointments.updateState(apt1, AppointmentState.Scheduled))
-            System.out.println("Scheduled: " + apt1);
-        else System.out.println("Failed to Schedule: " + apt1);
-
-
-        System.out.println();
-        System.out.println("Scheduled Appointments");
-        for(var a : appointments.getAppointments())
-        {
-            System.out.println(a);
+                default:
+                    System.out.println("Opción no válida. Intente nuevamente.");
+            }
         }
-
-
-
-
-
-
+        scanner.close();
     }
 }
